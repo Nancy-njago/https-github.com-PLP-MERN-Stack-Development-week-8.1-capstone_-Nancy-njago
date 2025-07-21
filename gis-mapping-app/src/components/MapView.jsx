@@ -1,3 +1,4 @@
+// ... imports unchanged
 import {
   MapContainer,
   TileLayer,
@@ -27,7 +28,7 @@ export default function MapView() {
   const [filteredAssets, setFilteredAssets] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState(null);
-  const [mapCenter, setMapCenter] = useState([-1.286389, 36.817223]);
+  const [mapCenter, setMapCenter] = useState([-1.286389, 36.817223]); // Default: Nairobi
 
   // Fetch assets
   useEffect(() => {
@@ -39,9 +40,21 @@ export default function MapView() {
 
   // Center map on user's location
   useEffect(() => {
+    if (!navigator.geolocation) {
+      console.warn('Geolocation not supported by this browser.');
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => setMapCenter([coords.latitude, coords.longitude]),
-      (err) => console.warn('Geolocation denied:', err.message)
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          console.warn('User denied geolocation');
+          alert('Location access is blocked. Showing default location.');
+        } else {
+          console.warn('Geolocation error:', err.message);
+        }
+      }
     );
   }, []);
 
@@ -49,12 +62,12 @@ export default function MapView() {
     if (type === 'All') {
       setFilteredAssets(assets);
     } else {
-      setFilteredAssets(assets.filter(a => a.type === type));
+      setFilteredAssets(assets.filter((a) => a.type === type));
     }
   };
 
   const total = assets.length;
-  const faulty = assets.filter(a => a.status === 'Faulty').length;
+  const faulty = assets.filter((a) => a.status === 'Faulty').length;
 
   return (
     <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
@@ -69,8 +82,6 @@ export default function MapView() {
           boxSizing: 'border-box',
         }}
       >
-  
-
         <h3>Asset Dashboard</h3>
         <p><strong>Total:</strong> {total}</p>
         <p><strong>Faulty:</strong> {faulty}</p>

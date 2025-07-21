@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const assetController = require('../controllers/assetController');
+const protect = require('../middleware/auth');
 
 router.get('/', assetController.getAssets);
 router.post('/', assetController.createAsset);
