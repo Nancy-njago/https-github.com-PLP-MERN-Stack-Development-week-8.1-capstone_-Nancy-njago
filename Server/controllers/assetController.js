@@ -1,7 +1,7 @@
-const Asset = require('../models/Asset');
+import Asset from '../models/Asset.js';
 
 // GET /api/assets
-exports.getAssets = async (req, res) => {
+export const getAssets = async (req, res) => {
   try {
     const assets = await Asset.find();
     res.json(assets);
@@ -11,7 +11,7 @@ exports.getAssets = async (req, res) => {
 };
 
 // POST /api/assets
-exports.createAsset = async (req, res) => {
+export const createAsset = async (req, res) => {
   try {
     const asset = new Asset(req.body);
     await asset.save();
@@ -22,7 +22,7 @@ exports.createAsset = async (req, res) => {
 };
 
 // GET /api/assets/:id
-exports.getAssetById = async (req, res) => {
+export const getAssetById = async (req, res) => {
   try {
     const asset = await Asset.findById(req.params.id);
     if (!asset) return res.status(404).json({ message: 'Not found' });
@@ -33,21 +33,31 @@ exports.getAssetById = async (req, res) => {
 };
 
 // PUT /api/assets/:id
-exports.updateAsset = async (req, res) => {
+export const updateAsset = async (req, res) => {
   try {
-    const asset = await Asset.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(asset);
+    const asset = await Asset.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!asset) return res.status(404).json({ error: 'Asset not found' });
+
+    res.status(200).json(asset);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 };
 
 // DELETE /api/assets/:id
-exports.deleteAsset = async (req, res) => {
+export const deleteAsset = async (req, res) => {
   try {
-    await Asset.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Asset deleted' });
+    const asset = await Asset.findByIdAndDelete(req.params.id);
+
+    if (!asset) return res.status(404).json({ error: 'Asset not found' });
+
+    res.status(204).send(); // No Content
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+

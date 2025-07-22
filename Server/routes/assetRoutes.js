@@ -1,12 +1,25 @@
-const express = require('express');
+import express from 'express';
+import * as assetController from '../controllers/assetController.js'; // <-- Updated line
+import protect from '../middleware/auth.js';
+
 const router = express.Router();
-const assetController = require('../controllers/assetController');
-const protect = require('../middleware/auth');
 
-router.get('/', assetController.getAssets);
-router.post('/', assetController.createAsset);
-router.get('/:id', assetController.getAssetById);
-router.put('/:id', assetController.updateAsset);
-router.delete('/:id', assetController.deleteAsset);
+// Middleware to check for admin role
+const adminOnly = (req, res, next) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Forbidden: Admins only' });
+  }
+  next();
+};
 
-module.exports = router;
+// Public routes (but protected by auth)
+router.get('/', protect, assetController.getAssets);
+router.get('/:id', protect, assetController.getAssetById);
+
+// Admin-only routes
+router.post('/', protect, adminOnly, assetController.createAsset);
+router.put('/:id', protect, adminOnly, assetController.updateAsset);
+router.delete('/:id', protect, adminOnly, assetController.deleteAsset);
+
+export default router;
+

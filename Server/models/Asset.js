@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const AssetSchema = new mongoose.Schema({
   name: {
@@ -33,6 +33,9 @@ const AssetSchema = new mongoose.Schema({
   },
 });
 
+// Enable geospatial queries
 AssetSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Asset', AssetSchema);
+const Asset = mongoose.model('Asset', AssetSchema);
+export default Asset;
+
