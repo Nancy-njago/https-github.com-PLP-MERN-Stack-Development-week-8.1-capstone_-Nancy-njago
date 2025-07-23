@@ -1,4 +1,4 @@
-name: CI/CD Monorepo Workflow
+name: CI/CD for Monorepo
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Node.js
@@ -22,17 +22,17 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: true  # Automatically runs pnpm install at root
+          run_install: true
 
-      - name: Confirm directory structure
-        run: ls -la && ls client && ls server
+      - name: Debug folder structure
+        run: ls -la && ls gis-mapping-app && ls Server
 
-      - name: Build backend (optional)
+      - name: Build backend
         run: |
-          cd server
-          pnpm run build || echo "No backend build step defined"
+          cd Server
+          pnpm run build || echo "No backend build step"
 
       - name: Build frontend
         run: |
-          cd gis-mapping-client
+          cd gis-mapping-app
           pnpm run build
