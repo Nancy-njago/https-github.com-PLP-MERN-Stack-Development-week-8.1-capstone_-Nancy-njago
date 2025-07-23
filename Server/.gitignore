@@ -1,0 +1,17 @@
+# MongoDB files and credentials
+.env
+dump/
+mongo/
+*.bson
+*.json
+
+# Node modules
+node_modules/
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
