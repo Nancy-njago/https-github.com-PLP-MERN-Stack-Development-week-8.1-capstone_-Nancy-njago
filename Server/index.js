@@ -1,7 +1,6 @@
-require('dotenv').config();
+import dotenv from 'dotenv'
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 
 import authRoutes from './routes/authRoutes.js'; // ✅ Corrected file casing
