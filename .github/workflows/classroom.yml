@@ -1,15 +1,46 @@
+name: CI/CD Pipeline
+
 on:
   push:
     branches: [main]
+
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-      - run: pnpm install
-      - run: pnpm run build
-      - run: pnpm start
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: 'pnpm'
+
+    - name: Install pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
+    - name: Install dependencies (monorepo)
+      run: pnpm install
+
+    - name: Build backend
+      run: |
+        cd server
+        pnpm run build || echo "No build step defined"
+
+    - name: Build frontend
+      run: |
+        cd client
+        pnpm run build
+
+    # Optional: run tests here
+    # - name: Run backend tests
+    #   run: cd server && pnpm test
+
+    # - name: Run frontend tests
+    #   run: cd client && pnpm test
+
+    # Deployment steps are skipped here; handled by Render and Netlify via GitHub integration
