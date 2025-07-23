@@ -4017,3 +4017,6 @@ snapshots:
       fd-slicer: 1.1.0
 
   yocto-queue@0.1.0: {}
+defaults:
+  run:
+    working-directory: SFUM/server
