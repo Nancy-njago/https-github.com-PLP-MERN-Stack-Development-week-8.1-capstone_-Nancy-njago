@@ -16,7 +16,6 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 8
-          run_install: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
@@ -24,15 +23,26 @@ jobs:
           node-version: 18
           cache: 'pnpm'
 
-      - name: Install dependencies
+      # 👉 Backend
+      - name: Install backend dependencies
+        working-directory: server
         run: pnpm install
 
       - name: Build backend
-        run: |
-          cd server
-          pnpm run build || echo "No build script defined"
+        working-directory: server
+        run: pnpm run build || echo "No build script defined"
+
+      - name: Deploy backend to Render
+        run: curl -X POST "$RENDER_DEPLOY_HOOK"
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+
+      # 👉 Frontend
+      - name: Install frontend dependencies
+        working-directory: gis-mapping-app
+        run: pnpm install
 
       - name: Build frontend
-        run: |
-          cd client
-          pnpm run build
+        working-directory: gis-mapping-app
+        run: pnpm run build
+
